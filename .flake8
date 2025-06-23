@@ -1,0 +1,27 @@
+# flake8 configuration
+[flake8]
+max-line-length = 127
+extend-ignore = 
+    # E203: whitespace before ':'
+    E203,
+    # W503: line break before binary operator
+    W503,
+    # F401: module imported but unused (for __init__.py files)
+    F401
+exclude = 
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    migrations,
+    .pytest_cache,
+    node_modules,
+    staticfiles,
+max-complexity = 10
+per-file-ignores =
+    # Django settings files can be longer
+    settings.py:E501
+    settings_*.py:E501
+    # Test files can have longer lines
+    test_*.py:E501
+    tests.py:E501

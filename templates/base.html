@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Resume Screener Enterprise Platform{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        },
+                        accent: {
+                            50: '#fef7ff',
+                            100: '#fce7ff',
+                            200: '#f8d1ff',
+                            300: '#f2a8ff',
+                            400: '#e879f9',
+                            500: '#d946ef',
+                            600: '#c026d3',
+                            700: '#a21caf',
+                            800: '#86198f',
+                            900: '#701a75',
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                        'bounce-gentle': 'bounceGentle 2s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        bounceGentle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-2px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Custom Professional Styles */
+        .gradient-primary {
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 50%, #8b5cf6 100%);
+        }
+        .gradient-secondary {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .card-professional {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .card-professional:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+        }        .nav-blur {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        /* Professional Button Animations */
+        .btn-professional {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .btn-professional::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .btn-professional:hover::before {
+            left: 100%;
+        }
+        
+        .btn-shimmer {
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200px 0; }
+            100% { background-position: calc(200px + 100%) 0; }
+        }
+        
+        .btn-glow:hover {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+        
+        .pulse-ring {
+            animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.33);
+            }
+            40%, 50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-primary-50 via-white to-accent-50 min-h-screen font-sans">    <!-- Navigation Header -->
+    <nav class="nav-blur sticky top-0 z-50 border-b border-primary-100/50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center mr-3 shadow-lg">
+                            <i class="fas fa-briefcase text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <a href="{% url 'home' %}" class="text-xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+                                Resume Screener
+                            </a>
+                            <div class="text-xs text-secondary-500 font-medium">Enterprise Platform</div>
+                        </div>
+                    </div>
+                    
+                    {% if user.is_authenticated %}
+                        <div class="hidden lg:ml-10 lg:flex lg:space-x-1">
+                            {% if user.user_type == 'applicant' %}
+                                <a href="{% url 'applicant_dashboard' %}" class="group px-4 py-2 rounded-xl text-sm font-medium text-secondary-700 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                                    <i class="fas fa-user mr-2 group-hover:animate-bounce-gentle"></i>
+                                    Dashboard
+                                </a>
+                                <a href="{% url 'job_list' %}" class="group px-4 py-2 rounded-xl text-sm font-medium text-secondary-700 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                                    <i class="fas fa-briefcase mr-2 group-hover:animate-bounce-gentle"></i>
+                                    Browse Jobs
+                                </a>
+                            {% elif user.user_type == 'hr' %}
+                                <a href="{% url 'hr_dashboard' %}" class="group px-4 py-2 rounded-xl text-sm font-medium text-secondary-700 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                                    <i class="fas fa-tachometer-alt mr-2 group-hover:animate-bounce-gentle"></i>
+                                    HR Dashboard
+                                </a>
+                                <a href="{% url 'hr_applications' %}" class="group px-4 py-2 rounded-xl text-sm font-medium text-secondary-700 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                                    <i class="fas fa-file-alt mr-2 group-hover:animate-bounce-gentle"></i>
+                                    Applications
+                                </a>
+                                <a href="{% url 'analytics' %}" class="group px-4 py-2 rounded-xl text-sm font-medium text-secondary-700 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                                    <i class="fas fa-chart-line mr-2 group-hover:animate-bounce-gentle"></i>
+                                    Analytics
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="hidden lg:ml-10 lg:flex lg:space-x-1">
+                            <a href="{% url 'job_list' %}" class="group px-4 py-2 rounded-xl text-sm font-medium text-secondary-700 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                                <i class="fas fa-briefcase mr-2 group-hover:animate-bounce-gentle"></i>
+                                Browse Jobs
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                        <!-- User Info -->
+                        <div class="hidden lg:flex items-center space-x-4">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-gradient-to-r from-primary-500 to-accent-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-bold">{{ user.get_full_name.0|default:user.username.0|upper }}</span>
+                                </div>
+                                <div class="text-sm">
+                                    <div class="font-medium text-secondary-900">{{ user.get_full_name|default:user.username }}</div>
+                                    <div class="text-xs text-secondary-500">{{ user.get_user_type_display }}</div>
+                                </div>
+                            </div>
+                            <a href="{% url 'logout' %}" class="text-sm text-secondary-600 hover:text-red-600 transition-colors">
+                                <i class="fas fa-sign-out-alt mr-1"></i>
+                                Logout
+                            </a>
+                        </div>
+                        
+                        {% if user.user_type == 'hr' %}
+                            <button onclick="window.location.href='{% url 'create_job' %}'" class="btn-primary px-6 py-2.5 rounded-xl text-white text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                                <i class="fas fa-plus mr-2"></i>
+                                Post Job
+                            </button>
+                        {% endif %}
+                    {% else %}
+                        <!-- Login/Signup buttons -->
+                        <div class="flex items-center space-x-3">
+                            <a href="{% url 'login' %}" class="text-sm font-medium text-secondary-700 hover:text-primary-600 transition-colors">
+                                Login
+                            </a>
+                            <a href="{% url 'applicant_signup' %}" class="bg-gradient-to-r from-primary-500 to-accent-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-lg transition-all duration-200">
+                                Sign Up
+                            </a>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Mobile menu button -->
+                    <button class="lg:hidden p-2 rounded-xl text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                        <i class="fas fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav><!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        {% if messages %}
+            <div class="space-y-4 mb-8 animate-slide-up">
+                {% for message in messages %}
+                    <div class="{% if message.tags == 'success' %}bg-green-50 border-l-4 border-green-400 text-green-800{% elif message.tags == 'error' %}bg-red-50 border-l-4 border-red-400 text-red-800{% elif message.tags == 'warning' %}bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800{% else %}bg-primary-50 border-l-4 border-primary-400 text-primary-800{% endif %} p-4 rounded-r-lg shadow-sm">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                {% if message.tags == 'success' %}
+                                    <div class="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-check text-white text-xs"></i>
+                                    </div>
+                                {% elif message.tags == 'error' %}
+                                    <div class="w-6 h-6 bg-red-400 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-times text-white text-xs"></i>
+                                    </div>
+                                {% elif message.tags == 'warning' %}
+                                    <div class="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-exclamation text-white text-xs"></i>
+                                    </div>
+                                {% else %}
+                                    <div class="w-6 h-6 bg-primary-400 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-info text-white text-xs"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="ml-3 font-medium">
+                                {{ message }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="animate-fade-in">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="text-center text-gray-500 text-sm">
+                <p>&copy; 2025 Resume Screener Enterprise Platform. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        // Global JavaScript functions
+        function showLoading(button) {
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+        }
+
+        function hideLoading(button, originalText) {
+            button.disabled = false;
+            button.innerHTML = originalText;
+        }        // Auto-hide messages after 7 seconds
+        setTimeout(() => {
+            const messages = document.querySelectorAll('[class*="bg-green-50"], [class*="bg-red-50"], [class*="bg-blue-50"]');
+            messages.forEach(msg => {
+                if (msg.parentElement) {
+                    msg.style.transition = 'opacity 0.5s';
+                    msg.style.opacity = '0';
+                    setTimeout(() => msg.remove(), 500);
+                }
+            });
+        }, 7000);
+        
+        // Global System Status Monitoring
+        function updateSystemStatus() {
+            fetch('/api/system-status/')
+                .then(response => response.json())
+                .then(data => {
+                    const statusDot = document.getElementById('statusDot');
+                    const statusText = document.getElementById('statusText');
+                    
+                    if (statusDot && statusText) {
+                        const status = data.overall.status;
+                        statusDot.className = 'w-2 h-2 rounded-full';
+                        
+                        if (status === 'healthy') {
+                            statusDot.classList.add('bg-green-500', 'animate-pulse');
+                            statusText.textContent = 'All Systems Online';
+                            statusText.className = 'text-xs font-medium text-green-700';
+                        } else if (status === 'degraded') {
+                            statusDot.classList.add('bg-yellow-500', 'animate-pulse');
+                            statusText.textContent = 'System Issues';
+                            statusText.className = 'text-xs font-medium text-yellow-700';
+                        } else {
+                            statusDot.classList.add('bg-red-500', 'animate-pulse');
+                            statusText.textContent = 'System Critical';
+                            statusText.className = 'text-xs font-medium text-red-700';
+                        }
+                    }
+                })
+                .catch(error => {
+                    const statusDot = document.getElementById('statusDot');
+                    const statusText = document.getElementById('statusText');
+                    
+                    if (statusDot && statusText) {
+                        statusDot.className = 'w-2 h-2 bg-gray-400 rounded-full';
+                        statusText.textContent = 'Status Unknown';
+                        statusText.className = 'text-xs font-medium text-gray-600';
+                    }
+                });
+        }
+        
+        // Initial status check
+        updateSystemStatus();
+        
+        // Update status every 30 seconds
+        setInterval(updateSystemStatus, 30000);
+    </script>
+
+    {% block extra_js %}
+    {% endblock %}
+</body>
+</html>

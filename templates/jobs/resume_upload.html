@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Resume for {{ job.title }} - Resume Screener Enterprise Platform{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="mb-8">
+    <div class="animate-fade-in">
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent mb-4">
+            Upload Resume
+        </h1>
+        <p class="text-lg text-secondary-600">
+            Upload your resume for <span class="font-semibold text-primary-600">{{ job.title }}</span>
+        </p>
+    </div>
+</div>
+
+<!-- Upload Form -->
+<div class="max-w-2xl mx-auto">
+    <div class="card-professional p-8 animate-slide-up">
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-secondary-800 mb-2">{{ job.title }}</h2>
+            <p class="text-secondary-600">{{ job.description|truncatewords:30 }}</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            <div>
+                <label for="id_name" class="block text-sm font-medium text-secondary-700 mb-2">
+                    Your Name
+                </label>
+                <input type="text" name="name" id="id_name" required 
+                       class="w-full px-4 py-3 border border-secondary-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200">
+            </div>
+
+            <div>
+                <label for="id_email" class="block text-sm font-medium text-secondary-700 mb-2">
+                    Email Address
+                </label>
+                <input type="email" name="email" id="id_email" required 
+                       class="w-full px-4 py-3 border border-secondary-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200">
+            </div>
+
+            <div>
+                <label for="id_resume_file" class="block text-sm font-medium text-secondary-700 mb-2">
+                    Resume File (PDF)
+                </label>
+                <div class="relative">
+                    <input type="file" name="resume_file" id="id_resume_file" accept=".pdf" required 
+                           class="hidden" onchange="updateFileName(this)">
+                    <div class="w-full px-4 py-3 border-2 border-dashed border-secondary-300 rounded-xl bg-secondary-50 hover:bg-secondary-100 transition-all duration-200 cursor-pointer"
+                         onclick="document.getElementById('id_resume_file').click()">
+                        <div class="text-center">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-primary-500 mb-2"></i>
+                            <p class="text-secondary-600" id="file-name">Click to select your resume (PDF format)</p>
+                            <p class="text-sm text-secondary-500 mt-1">Maximum file size: 10MB</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center pt-6">
+                <a href="{% url 'job_detail' job.id %}" 
+                   class="px-6 py-3 text-secondary-600 font-semibold hover:text-secondary-800 transition-colors duration-200">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to Job Details
+                </a>
+                <button type="submit" 
+                        class="btn-primary px-8 py-3 rounded-xl text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                    <i class="fas fa-upload mr-2"></i>
+                    Upload Resume
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function updateFileName(input) {
+    const fileName = document.getElementById('file-name');
+    if (input.files && input.files[0]) {
+        fileName.textContent = input.files[0].name;
+        fileName.parentElement.parentElement.classList.add('border-primary-500', 'bg-primary-50');
+        fileName.parentElement.parentElement.classList.remove('border-secondary-300', 'bg-secondary-50');
+    } else {
+        fileName.textContent = 'Click to select your resume (PDF format)';
+        fileName.parentElement.parentElement.classList.remove('border-primary-500', 'bg-primary-50');
+        fileName.parentElement.parentElement.classList.add('border-secondary-300', 'bg-secondary-50');
+    }
+}
+</script>
+{% endblock %}

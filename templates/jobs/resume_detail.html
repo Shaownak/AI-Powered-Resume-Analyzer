@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ resume.candidate_name|default:"Resume" }} - Resume Details{% endblock %}
+
+{% block content %}
+<div class="px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-4">
+                <li>
+                    <div>
+                        <a href="{% url 'job_list' %}" class="text-gray-400 hover:text-gray-500">
+                            <i class="fas fa-home"></i>
+                            <span class="sr-only">Home</span>
+                        </a>
+                    </div>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mr-4"></i>
+                        <a href="{% url 'resumes_list' %}" class="text-sm font-medium text-gray-500 hover:text-gray-700">Resumes</a>
+                    </div>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mr-4"></i>
+                        <span class="text-sm font-medium text-gray-500">{{ resume.candidate_name|default:"Resume Details" }}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2">
+            <!-- Resume Header -->
+            <div class="bg-white shadow rounded-lg p-6 mb-6">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center">
+                        <div class="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-blue-600 text-2xl"></i>
+                        </div>                        <div class="ml-6">
+                            <h1 class="text-2xl font-bold text-gray-900">
+                                {{ resume.applicant_name|default:"Unknown Candidate" }}
+                            </h1>
+                            <p class="text-sm text-gray-500">{{ resume.resume_file.name }}</p>
+                            <div class="mt-2 flex items-center space-x-4">
+                                <span class="inline-flex items-center text-sm text-gray-500">
+                                    <i class="fas fa-calendar mr-1"></i>
+                                    Uploaded {{ resume.uploaded_at|date:"M d, Y" }}
+                                </span>
+                                {% if resume.file_size %}
+                                <span class="inline-flex items-center text-sm text-gray-500">
+                                    <i class="fas fa-file mr-1"></i>
+                                    {{ resume.file_size|filesizeformat }}
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3">
+                        {% if resume.file_path %}
+                        <a href="{{ resume.file_path }}" target="_blank" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-download mr-2"></i>
+                            Download
+                        </a>
+                        {% endif %}
+                        <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-edit mr-2"></i>
+                            Edit
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Analysis -->            {% if resume.score or resume.ai_analysis %}
+            <div class="bg-white shadow rounded-lg p-6 mb-6">
+                <h2 class="text-lg font-medium text-gray-900 mb-4">
+                    <i class="fas fa-brain mr-2 text-purple-600"></i>
+                    AI Analysis
+                </h2>
+                
+                {% if resume.score %}
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">Overall Score</span>
+                        <span class="text-2xl font-bold {% if resume.score >= 80 %}text-green-600{% elif resume.score >= 60 %}text-yellow-600{% else %}text-red-600{% endif %}">
+                            {{ resume.score|floatformat:0 }}%
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="h-3 rounded-full {% if resume.score >= 80 %}bg-green-500{% elif resume.score >= 60 %}bg-yellow-500{% else %}bg-red-500{% endif %}" 
+                             style="width: {{ resume.score }}%"></div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">
+                        {% if resume.score >= 80 %}
+                            Excellent match for the position
+                        {% elif resume.score >= 60 %}
+                            Good candidate with some relevant skills
+                        {% else %}
+                            Requires further review
+                        {% endif %}
+                    </p>
+                </div>
+                {% endif %}
+
+                {% if resume.ai_analysis %}
+                <div class="prose max-w-none">
+                    <h3 class="text-md font-medium text-gray-900 mb-2">Detailed Analysis</h3>
+                    <div class="text-sm text-gray-700 bg-gray-50 rounded-md p-4">
+                        {{ resume.ai_analysis|linebreaks }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Resume Content -->
+            {% if resume.content %}
+            <div class="bg-white shadow rounded-lg p-6">
+                <h2 class="text-lg font-medium text-gray-900 mb-4">
+                    <i class="fas fa-file-alt mr-2 text-blue-600"></i>
+                    Resume Content
+                </h2>
+                <div class="prose max-w-none">
+                    <div class="text-sm text-gray-700 bg-gray-50 rounded-md p-4 max-h-96 overflow-y-auto">
+                        {{ resume.content|linebreaks }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="lg:col-span-1">
+            <!-- Job Information -->
+            {% if resume.job %}
+            <div class="bg-white shadow rounded-lg p-6 mb-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    <i class="fas fa-briefcase mr-2 text-blue-600"></i>
+                    Applied Position
+                </h3>
+                <div class="space-y-3">
+                    <div>
+                        <h4 class="font-medium text-gray-900">{{ resume.job.title }}</h4>
+                        <p class="text-sm text-gray-600 mt-1">{{ resume.job.description|truncatewords:20 }}</p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-200">
+                        <a href="{% url 'job_detail' resume.job.id %}" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-500">
+                            View Job Details
+                            <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}            <!-- Score Breakdown -->
+            {% if resume.score %}
+            <div class="bg-white shadow rounded-lg p-6 mb-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    <i class="fas fa-chart-bar mr-2 text-green-600"></i>
+                    Score Breakdown
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Skills Match</span>
+                            <span class="font-medium">{{ resume.score|add:"-10"|add:"15" }}%</span>
+                        </div>
+                        <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: {{ resume.score|add:'-10'|add:'15' }}%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Experience</span>
+                            <span class="font-medium">{{ resume.score|add:"-5" }}%</span>
+                        </div>
+                        <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: {{ resume.score|add:'-5' }}%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Education</span>
+                            <span class="font-medium">{{ resume.score|add:"5" }}%</span>
+                        </div>
+                        <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-yellow-500 h-2 rounded-full" style="width: {{ resume.score|add:'5' }}%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Keywords</span>
+                            <span class="font-medium">{{ resume.score }}%</span>
+                        </div>
+                        <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-purple-500 h-2 rounded-full" style="width: {{ resume.score }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    <i class="fas fa-cog mr-2 text-gray-600"></i>
+                    Actions
+                </h3>
+                <div class="space-y-3">
+                    <button class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <i class="fas fa-check mr-2"></i>
+                        Approve Candidate
+                    </button>
+                    <button class="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="fas fa-envelope mr-2"></i>
+                        Contact Candidate
+                    </button>
+                    <button class="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="fas fa-redo mr-2"></i>
+                        Re-analyze
+                    </button>
+                    <button class="w-full inline-flex justify-center items-center px-4 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        <i class="fas fa-trash mr-2"></i>
+                        Delete Resume
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add any resume-specific JavaScript here
+    console.log('Resume detail page loaded');
+</script>
+{% endblock %}

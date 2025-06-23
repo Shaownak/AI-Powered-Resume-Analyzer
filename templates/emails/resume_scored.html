@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 30px 20px; text-align: center; }
+        .content { padding: 30px 20px; }
+        .job-title { font-size: 24px; font-weight: bold; color: #1a202c; margin-bottom: 10px; }
+        .message { font-size: 16px; line-height: 1.6; color: #4a5568; margin-bottom: 25px; }
+        .score-box { background: #f0fff4; border: 2px solid #48bb78; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; }
+        .score { font-size: 36px; font-weight: bold; color: #38a169; }
+        .footer { background: #f7fafc; padding: 20px; text-align: center; color: #718096; font-size: 14px; }
+        .check-icon { font-size: 48px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="check-icon">✅</div>
+            <h1>Resume Analysis Complete</h1>
+            <p>Your resume has been processed</p>
+        </div>
+        
+        <div class="content">
+            <div class="job-title">{{ job.title }}</div>
+            
+            <div class="message">
+                <p>Dear {{ recipient.get_full_name|default:recipient.username }},</p>
+                
+                <p>We have completed the analysis of your resume for the <strong>{{ job.title }}</strong> position.</p>
+                
+                {% if application.resume.score %}
+                <div class="score-box">
+                    <div>Your Resume Score</div>
+                    <div class="score">{{ application.resume.score|floatformat:2 }}%</div>
+                    <div style="font-size: 14px; color: #4a5568; margin-top: 10px;">
+                        Based on job requirements matching
+                    </div>
+                </div>
+                {% endif %}
+                
+                <p>Our AI-powered system has analyzed your resume against the job requirements. The HR team will review all applications and contact qualified candidates for the next steps.</p>
+                
+                <p>Thank you for your interest in this position!</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated message from the Resume Screener Platform.</p>
+            <p>You will be notified of any updates to your application status.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}Post New Job - HR Dashboard{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Post New Job</h1>
+                <p class="text-gray-600 mt-1">Create a new job posting to attract qualified candidates</p>
+            </div>
+            <a href="{% url 'hr_dashboard' %}" class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors">
+                ← Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Job Creation Form -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600">
+                <h2 class="text-xl font-bold text-white">Job Details</h2>
+            </div>
+            
+            <form method="post" class="p-8 space-y-6">
+                {% csrf_token %}
+                
+                <!-- Job Title -->
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                        Job Title *
+                    </label>
+                    <input 
+                        type="text" 
+                        id="title" 
+                        name="title" 
+                        required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        placeholder="e.g., Senior Software Engineer, Marketing Manager"
+                    >
+                </div>
+
+                <!-- Location -->
+                <div>
+                    <label for="location" class="block text-sm font-medium text-gray-700 mb-2">
+                        Location
+                    </label>
+                    <input 
+                        type="text" 
+                        id="location" 
+                        name="location" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        placeholder="e.g., New York, NY or Remote"
+                    >
+                </div>
+
+                <!-- Employment Type -->
+                <div>
+                    <label for="employment_type" class="block text-sm font-medium text-gray-700 mb-2">
+                        Employment Type
+                    </label>
+                    <select 
+                        id="employment_type" 
+                        name="employment_type" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    >
+                        <option value="full_time">Full Time</option>
+                        <option value="part_time">Part Time</option>
+                        <option value="contract">Contract</option>
+                        <option value="internship">Internship</option>
+                    </select>
+                </div>
+
+                <!-- Salary Range -->
+                <div>
+                    <label for="salary_range" class="block text-sm font-medium text-gray-700 mb-2">
+                        Salary Range
+                    </label>
+                    <input 
+                        type="text" 
+                        id="salary_range" 
+                        name="salary_range" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        placeholder="e.g., $80,000 - $120,000 per year"
+                    >
+                </div>
+
+                <!-- Job Description -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Job Description *
+                    </label>
+                    <textarea 
+                        id="description" 
+                        name="description" 
+                        required
+                        rows="6" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        placeholder="Describe the role, responsibilities, and what the ideal candidate will be doing..."
+                    ></textarea>
+                    <p class="mt-1 text-sm text-gray-500">Provide a detailed description of the job role and responsibilities.</p>
+                </div>
+
+                <!-- Job Requirements -->
+                <div>
+                    <label for="requirements" class="block text-sm font-medium text-gray-700 mb-2">
+                        Requirements & Qualifications
+                    </label>
+                    <textarea 
+                        id="requirements" 
+                        name="requirements" 
+                        rows="6" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        placeholder="List the required qualifications, skills, experience, and education..."
+                    ></textarea>
+                    <p class="mt-1 text-sm text-gray-500">Specify the skills, experience, and qualifications needed for this role.</p>
+                </div>
+
+                <!-- Preview Section -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">How it works:</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-900">Job Posted</h4>
+                            <p class="text-sm text-gray-600">Your job will be visible to all applicants</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-900">AI Screening</h4>
+                            <p class="text-sm text-gray-600">Resumes are automatically scored against requirements</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-900">Review & Approve</h4>
+                            <p class="text-sm text-gray-600">You review applications and approve the best candidates</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end space-x-4 pt-6 border-t">
+                    <a href="{% url 'hr_dashboard' %}" class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </a>
+                    <button type="submit" class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">
+                        Post Job
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-resize textareas
+document.querySelectorAll('textarea').forEach(textarea => {
+    textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+    });
+});
+</script>
+{% endblock %}

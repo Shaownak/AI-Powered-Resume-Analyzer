@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center; }
+        .content { padding: 30px 20px; }
+        .job-title { font-size: 24px; font-weight: bold; color: #1a202c; margin-bottom: 10px; }
+        .message { font-size: 16px; line-height: 1.6; color: #4a5568; margin-bottom: 25px; }
+        .cta-button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: bold; margin: 20px 0; }
+        .footer { background: #f7fafc; padding: 20px; text-align: center; color: #718096; font-size: 14px; }
+        .success-icon { font-size: 48px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="success-icon">🎉</div>
+            <h1>Congratulations!</h1>
+            <p>Your application has been approved</p>
+        </div>
+        
+        <div class="content">
+            <div class="job-title">{{ job.title }}</div>
+            
+            <div class="message">
+                <p>Dear {{ recipient.get_full_name|default:recipient.username }},</p>
+                
+                <p>We are pleased to inform you that your application for the <strong>{{ job.title }}</strong> position has been approved!</p>
+                
+                <p>{{ notification.message }}</p>
+                
+                <p>Our HR team will contact you soon with the next steps in the hiring process. Please keep an eye on your email and phone for further communication.</p>
+                
+                <p><strong>Job Details:</strong></p>
+                <ul>
+                    <li><strong>Position:</strong> {{ job.title }}</li>
+                    <li><strong>Location:</strong> {{ job.location|default:"Remote/Office" }}</li>
+                    <li><strong>Employment Type:</strong> {{ job.get_employment_type_display }}</li>
+                    {% if job.salary_range %}
+                    <li><strong>Salary Range:</strong> {{ job.salary_range }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="#" class="cta-button">View Application Status</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated message from the Resume Screener Platform.</p>
+            <p>If you have any questions, please don't hesitate to contact our HR team.</p>
+        </div>
+    </div>
+</body>
+</html>

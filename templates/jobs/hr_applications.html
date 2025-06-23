@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+
+{% block title %}All Applications - HR Dashboard{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">All Applications</h1>
+                <p class="text-gray-600 mt-1">Review and manage job applications</p>
+            </div>
+            <a href="{% url 'hr_dashboard' %}" class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors">
+                ← Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Applications List -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            {% if applications %}
+                <div class="px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600">
+                    <h2 class="text-xl font-bold text-white">Applications ({{ applications.count }})</h2>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job Position</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AI Score</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applied</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for application in applications %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                                            {{ application.applicant.get_full_name.0|default:application.applicant.username.0 }}
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                {{ application.applicant.get_full_name|default:application.applicant.username }}
+                                            </div>
+                                            <div class="text-sm text-gray-500">{{ application.applicant.email }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">{{ application.job.title }}</div>
+                                    <div class="text-sm text-gray-500">{{ application.job.location|default:"Remote" }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {% if application.resume and application.resume.score %}
+                                        <div class="flex items-center">
+                                            <div class="text-sm font-medium text-gray-900">{{ application.resume.score|floatformat:2 }}%</div>
+                                            {% if application.resume.score >= 80 %}
+                                                <span class="ml-2 w-2 h-2 bg-green-500 rounded-full"></span>
+                                            {% elif application.resume.score >= 60 %}
+                                                <span class="ml-2 w-2 h-2 bg-yellow-500 rounded-full"></span>
+                                            {% else %}
+                                                <span class="ml-2 w-2 h-2 bg-red-500 rounded-full"></span>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-sm text-gray-400">Processing...</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ application.applied_at|date:"M d, Y" }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {% if application.status == 'pending' %}
+                                        <span class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">Pending</span>
+                                    {% elif application.status == 'approved' %}
+                                        <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Approved</span>
+                                    {% elif application.status == 'rejected' %}
+                                        <span class="px-2 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full">Rejected</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        {% if application.resume %}
+                                        <a href="{{ application.resume.resume_file.url }}" target="_blank" class="text-blue-600 hover:text-blue-900">
+                                            View Resume
+                                        </a>
+                                        {% endif %}
+                                        {% if application.status == 'pending' %}
+                                        <button onclick="approveApplication({{ application.id }})" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs">
+                                            Approve
+                                        </button>
+                                        <button onclick="rejectApplication({{ application.id }})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs">
+                                            Reject
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="p-12 text-center">
+                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">No applications yet</h3>
+                    <p class="text-gray-500">Applications will appear here once candidates start applying to your job postings.</p>
+                    <a href="{% url 'create_job' %}" class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+                        Post Your First Job
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function approveApplication(applicationId) {
+    if (confirm('Are you sure you want to approve this application?')) {
+        // Show loading state
+        const approveBtn = document.querySelector(`button[onclick="approveApplication(${applicationId})"]`);
+        const rejectBtn = document.querySelector(`button[onclick="rejectApplication(${applicationId})"]`);
+        
+        if (approveBtn) {
+            approveBtn.disabled = true;
+            approveBtn.innerHTML = 'Approving...';
+        }
+        if (rejectBtn) {
+            rejectBtn.disabled = true;
+        }
+        
+        fetch(`/jobs/applications/${applicationId}/approve/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Show success message before reload
+                alert('Application approved successfully! Notification sent to applicant.');
+                location.reload();
+            } else {
+                alert('Error approving application: ' + (data.error || 'Unknown error'));
+                // Reset buttons
+                if (approveBtn) {
+                    approveBtn.disabled = false;
+                    approveBtn.innerHTML = 'Approve';
+                }
+                if (rejectBtn) {
+                    rejectBtn.disabled = false;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error approving application: ' + error.message);
+            // Reset buttons
+            if (approveBtn) {
+                approveBtn.disabled = false;
+                approveBtn.innerHTML = 'Approve';
+            }
+            if (rejectBtn) {
+                rejectBtn.disabled = false;
+            }
+        });
+    }
+}
+
+function rejectApplication(applicationId) {
+    if (confirm('Are you sure you want to reject this application?')) {
+        // Show loading state
+        const approveBtn = document.querySelector(`button[onclick="approveApplication(${applicationId})"]`);
+        const rejectBtn = document.querySelector(`button[onclick="rejectApplication(${applicationId})"]`);
+        
+        if (rejectBtn) {
+            rejectBtn.disabled = true;
+            rejectBtn.innerHTML = 'Rejecting...';
+        }
+        if (approveBtn) {
+            approveBtn.disabled = true;
+        }
+        
+        fetch(`/jobs/applications/${applicationId}/reject/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Show success message before reload
+                alert('Application rejected successfully! Notification sent to applicant.');
+                location.reload();
+            } else {
+                alert('Error rejecting application: ' + (data.error || 'Unknown error'));
+                // Reset buttons
+                if (rejectBtn) {
+                    rejectBtn.disabled = false;
+                    rejectBtn.innerHTML = 'Reject';
+                }
+                if (approveBtn) {
+                    approveBtn.disabled = false;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error rejecting application: ' + error.message);
+            // Reset buttons
+            if (rejectBtn) {
+                rejectBtn.disabled = false;
+                rejectBtn.innerHTML = 'Reject';
+            }
+            if (approveBtn) {
+                approveBtn.disabled = false;
+            }
+        });
+    }
+}
+</script>
+{% csrf_token %}
+{% endblock %}

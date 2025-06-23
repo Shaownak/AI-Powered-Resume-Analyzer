@@ -1,0 +1,409 @@
+{% extends 'base.html' %}
+
+{% block title %}Jobs - Resume Screener Enterprise Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Header -->
+<div class="mb-8">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">        <div class="animate-fade-in">
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent mb-4">
+                Job Openings
+            </h1>
+            {% if user.user_type == 'hr' %}
+            <p class="text-lg text-secondary-600">
+                Manage and monitor all active job postings with intelligent resume screening and analytics
+            </p>
+            {% else %}
+            <p class="text-lg text-secondary-600">
+                Discover exciting career opportunities and apply with confidence
+            </p>
+            {% endif %}
+        </div>
+        {% if user.user_type == 'hr' %}
+        <div class="mt-6 lg:mt-0 animate-slide-up">
+            <button onclick="showCreateJobModal()" class="group relative btn-primary btn-professional px-10 py-4 rounded-2xl text-white font-bold shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+                <div class="relative z-10 flex items-center">
+                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3 group-hover:bg-white/30 transition-colors duration-300 group-hover:scale-110">
+                        <i class="fas fa-plus text-white text-lg group-hover:rotate-90 transition-transform duration-300"></i>
+                    </div>
+                    <span class="text-lg">Create New Job</span>
+                    <i class="fas fa-arrow-right ml-3 group-hover:translate-x-2 transition-transform duration-300"></i>
+                </div>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Enhanced Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-slide-up">
+    <!-- Total Jobs -->
+    <div class="card-professional p-6 text-center group">
+        <div class="w-16 h-16 mx-auto bg-gradient-to-r from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+            <i class="fas fa-briefcase text-white text-2xl"></i>
+        </div>
+        <h3 class="text-3xl font-bold text-secondary-800 mb-2">{{ jobs|length }}</h3>
+        <p class="text-secondary-600 font-medium">Active Jobs</p>
+    </div>
+
+    <!-- Total Resumes -->
+    <div class="card-professional p-6 text-center group">
+        <div class="w-16 h-16 mx-auto bg-gradient-to-r from-green-400 to-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+            <i class="fas fa-file-alt text-white text-2xl"></i>
+        </div>
+        <h3 class="text-3xl font-bold text-secondary-800 mb-2">{{ total_resumes|default:0 }}</h3>
+        <p class="text-secondary-600 font-medium">Total Resumes</p>
+    </div>
+
+    <!-- Average Score -->
+    <div class="card-professional p-6 text-center group">
+        <div class="w-16 h-16 mx-auto bg-gradient-to-r from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+            <i class="fas fa-chart-line text-white text-2xl"></i>
+        </div>
+        <h3 class="text-3xl font-bold text-secondary-800 mb-2">{{ avg_score|default:0|floatformat:2 }}%</h3>
+        <p class="text-secondary-600 font-medium">Average Score</p>
+    </div>
+
+    <!-- Recent Applications -->
+    <div class="card-professional p-6 text-center group">
+        <div class="w-16 h-16 mx-auto bg-gradient-to-r from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+            <i class="fas fa-clock text-white text-2xl"></i>
+        </div>
+        <h3 class="text-3xl font-bold text-secondary-800 mb-2">{{ recent_applications|default:0 }}</h3>
+        <p class="text-secondary-600 font-medium">This Week</p>
+    </div>
+</div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-star text-yellow-500 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Avg Score</dt>
+                            <dd class="text-3xl font-bold text-gray-900">{{ avg_score|default:0|floatformat:2 }}%</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-chart-line text-purple-500 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Active Today</dt>
+                            <dd class="text-3xl font-bold text-gray-900">{{ active_today|default:0 }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="mt-8 bg-white shadow rounded-lg p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label for="search" class="block text-sm font-medium text-gray-700">Search Jobs</label>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" id="search" class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md" placeholder="Search by title, description...">
+                </div>
+            </div>
+            <div>
+                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                <select id="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                    <option>All Statuses</option>
+                    <option>Active</option>
+                    <option>Closed</option>
+                    <option>Draft</option>
+                </select>
+            </div>
+            <div>
+                <label for="department" class="block text-sm font-medium text-gray-700">Department</label>
+                <select id="department" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                    <option>All Departments</option>
+                    <option>Engineering</option>
+                    <option>Marketing</option>
+                    <option>Sales</option>
+                    <option>HR</option>
+                </select>
+            </div>
+        </div>
+    </div>    <!-- Jobs Grid -->
+    {% if jobs %}
+        <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {% for job in jobs %}
+            <div class="card-professional p-6 hover:shadow-xl transition-all duration-300 group">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-briefcase text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-secondary-800 group-hover:text-primary-600 transition-colors duration-200">
+                                <a href="{% url 'job_detail' job.id %}">{{ job.title }}</a>
+                            </h3>
+                            <p class="text-sm text-secondary-500">{{ job.department|default:"General" }}</p>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                            <i class="fas fa-circle text-green-500 mr-1" style="font-size: 6px;"></i>
+                            Active
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-secondary-600 line-clamp-3">{{ job.description|truncatewords:20 }}</p>
+                </div>
+
+                <div class="flex items-center justify-between mb-6 text-sm">
+                    <div class="flex items-center text-secondary-500">
+                        <i class="fas fa-file-alt mr-2"></i>
+                        <span>{{ job.resume_count|default:0 }} resumes</span>
+                    </div>
+                    <div class="flex items-center text-secondary-500">
+                        <i class="fas fa-calendar mr-2"></i>
+                        <span>{{ job.created_at|date:"M d, Y" }}</span>
+                    </div>                </div>                <div class="space-y-4">
+                    <!-- Primary Action Button - View Details -->
+                    <a href="{% url 'job_detail' job.id %}" class="group relative w-full bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 hover:from-primary-700 hover:via-primary-800 hover:to-primary-900 text-white font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 ease-out block text-center overflow-hidden">
+                        <!-- Shimmer effect overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
+                        <div class="relative z-10 flex items-center justify-center">
+                            <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mr-3 group-hover:bg-white/30 transition-colors duration-300">
+                                <i class="fas fa-search-plus text-white text-sm"></i>
+                            </div>
+                            <span class="text-lg">View Job Details</span>
+                            <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform duration-300"></i>
+                        </div>
+                    </a>
+                    
+                    <!-- Secondary Action Button - Upload Resume -->
+                    <button onclick="uploadResume({{ job.id }})" class="group relative w-full bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 hover:from-emerald-600 hover:via-emerald-700 hover:to-emerald-800 text-white font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden">
+                        <!-- Shimmer effect overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
+                        <!-- Pulse effect for apply button -->
+                        <div class="absolute inset-0 bg-emerald-400/30 rounded-2xl animate-pulse"></div>
+                        <div class="relative z-10 flex items-center justify-center">
+                            <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mr-3 group-hover:bg-white/30 transition-colors duration-300 group-hover:scale-110">
+                                <i class="fas fa-rocket text-white text-sm"></i>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <span class="text-lg font-extrabold">Apply Now</span>
+                                <span class="text-sm opacity-90">Upload Your Resume</span>
+                            </div>
+                            <div class="ml-3 flex flex-col items-center">
+                                <i class="fas fa-upload group-hover:animate-bounce"></i>
+                                <div class="w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
+                            </div>
+                        </div>
+                    </button>
+                    
+                    <!-- Additional Info Bar -->
+                    <div class="flex items-center justify-between text-sm text-secondary-500 px-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-users mr-1"></i>
+                            <span>{{ job.resume_count|default:0 }} applicants</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-clock mr-1"></i>
+                            <span>{{ job.created_at|timesince }} ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>    {% else %}
+        <div class="mt-12 text-center animate-fade-in">
+            <div class="mx-auto h-32 w-32 text-secondary-400 mb-6">
+                <i class="fas fa-briefcase text-8xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-secondary-800 mb-4">No Job Openings Yet</h3>
+            <p class="text-lg text-secondary-600 mb-8 max-w-md mx-auto">
+                Get started by creating your first job posting to begin attracting top talent.
+            </p>            <button onclick="showCreateJobModal()" class="group relative bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 hover:from-primary-700 hover:via-primary-800 hover:to-primary-900 text-white font-bold px-12 py-5 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 ease-out overflow-hidden">
+                <!-- Shimmer effect overlay -->
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
+                <div class="relative z-10 flex items-center justify-center">
+                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-4 group-hover:bg-white/30 transition-colors duration-300 group-hover:scale-110">
+                        <i class="fas fa-plus text-white text-lg group-hover:rotate-90 transition-transform duration-300"></i>
+                    </div>
+                    <span class="text-xl">Create Your First Job</span>
+                    <i class="fas fa-arrow-right ml-4 group-hover:translate-x-2 transition-transform duration-300"></i>
+                </div>
+            </button>
+        </div>
+    {% endif %}
+</div>
+
+{% if user.user_type == 'hr' %}
+<!-- Create Job Modal -->
+<div id="createJobModal" class="fixed inset-0 bg-secondary-900 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 backdrop-blur-sm">
+    <div class="relative top-20 mx-auto p-6 border-0 w-11/12 md:w-3/4 lg:w-1/2 max-w-2xl shadow-2xl rounded-3xl bg-white animate-slide-up">
+        <div class="relative">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-secondary-200">
+                <div>
+                    <h3 class="text-2xl font-bold text-secondary-800">Create New Job</h3>
+                    <p class="text-secondary-600 mt-1">Post a new job opening and start receiving applications</p>
+                </div>
+                <button onclick="hideCreateJobModal()" class="text-secondary-400 hover:text-secondary-600 hover:bg-secondary-100 rounded-xl p-2 transition-all duration-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Form -->
+            <form id="createJobForm" method="post" action="{% url 'job_list' %}" class="space-y-6">
+                {% csrf_token %}
+                
+                <div>
+                    <label for="title" class="block text-sm font-semibold text-secondary-700 mb-2">
+                        Job Title <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="title" id="title" required 
+                           class="w-full px-4 py-3 border border-secondary-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-white"
+                           placeholder="e.g., Senior Software Engineer">
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-semibold text-secondary-700 mb-2">
+                        Job Description <span class="text-red-500">*</span>
+                    </label>
+                    <textarea name="description" id="description" rows="4" required 
+                              class="w-full px-4 py-3 border border-secondary-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-white resize-none"
+                              placeholder="Describe the role, responsibilities, and requirements..."></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="department" class="block text-sm font-semibold text-secondary-700 mb-2">
+                            Department
+                        </label>
+                        <input type="text" name="department" id="department" 
+                               class="w-full px-4 py-3 border border-secondary-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-white"
+                               placeholder="e.g., Engineering">
+                    </div>
+                    <div>
+                        <label for="location" class="block text-sm font-semibold text-secondary-700 mb-2">
+                            Location
+                        </label>
+                        <input type="text" name="location" id="location" 
+                               class="w-full px-4 py-3 border border-secondary-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-white"
+                               placeholder="e.g., Remote, New York">
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-end space-x-4 pt-6 border-t border-secondary-200">
+                    <button type="button" onclick="hideCreateJobModal()" 
+                            class="px-6 py-3 text-secondary-600 font-semibold hover:text-secondary-800 hover:bg-secondary-100 rounded-xl transition-all duration-200">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="btn-primary px-8 py-3 rounded-xl text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create Job
+                    </button>
+                </div>
+            </form>
+        </div>    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    {% if user.user_type == 'hr' %}
+    function showCreateJobModal() {
+        const modal = document.getElementById('createJobModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            // Focus on first input
+            const firstInput = modal.querySelector('input[name="title"]');
+            if (firstInput) {
+                setTimeout(() => firstInput.focus(), 100);
+            }
+        }
+    }
+
+    function hideCreateJobModal() {
+        const modal = document.getElementById('createJobModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            // Clear form
+            const form = modal.querySelector('form');
+            if (form) {
+                form.reset();
+            }
+        }    }
+    {% endif %}
+    
+    function uploadResume(jobId) {
+        window.location.href = `/jobs/job/${jobId}/upload-resume/`;
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('createJobModal');
+        if (modal && !modal.classList.contains('hidden')) {
+            if (event.target === modal) {
+                hideCreateJobModal();
+            }
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            hideCreateJobModal();
+        }
+    });
+
+    // Search functionality
+    const searchInput = document.getElementById('search');
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const jobCards = document.querySelectorAll('.card-professional');
+            
+            jobCards.forEach(card => {
+                const title = card.querySelector('h3') ? card.querySelector('h3').textContent.toLowerCase() : '';
+                const description = card.querySelector('.text-secondary-600') ? card.querySelector('.text-secondary-600').textContent.toLowerCase() : '';
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.parentElement.style.display = 'block';
+                } else {
+                    card.parentElement.style.display = 'none';
+                }
+            });
+        });
+    }
+
+    // Form validation
+    document.getElementById('createJobForm').addEventListener('submit', function(e) {
+        const title = this.querySelector('input[name="title"]').value.trim();
+        const description = this.querySelector('textarea[name="description"]').value.trim();
+        
+        if (!title || !description) {
+            e.preventDefault();
+            alert('Please fill in both title and description fields.');
+            return false;
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,21 @@
+2025-06-24 01:33:36 - Starting health check...
+2025-06-24 01:33:36 - Docker is available
+2025-06-24 01:33:36 - Compose file docker-compose.prod.yml found
+2025-06-24 01:33:37 - WARNING: Disk usage is high: 95.78%
+2025-06-24 01:33:37 - Memory usage is normal: 78.01%
+2025-06-24 01:33:41 - Service Test Web Service is unhealthy: Unable to connect to the remote server
+2025-06-24 01:33:41 - Health check completed
+2025-06-24 01:49:32 - Starting health check...
+2025-06-24 01:49:32 - Docker is available
+2025-06-24 01:49:32 - Compose file docker-compose.prod.yml found
+2025-06-24 01:49:32 - WARNING: Disk usage is high: 96.87%
+2025-06-24 01:49:32 - Memory usage is normal: 80.94%
+2025-06-24 01:49:36 - Service Test Web Service is unhealthy: Unable to connect to the remote server
+2025-06-24 01:49:36 - Health check completed
+2025-06-24 01:58:17 - Starting health check...
+2025-06-24 01:58:18 - Docker is available
+2025-06-24 01:58:18 - Compose file docker-compose.prod.yml found
+2025-06-24 01:58:18 - WARNING: Disk usage is high: 96.87%
+2025-06-24 01:58:18 - Memory usage is normal: 81.86%
+2025-06-24 01:58:22 - Service Test Web Service is unhealthy: Unable to connect to the remote server
+2025-06-24 01:58:22 - Health check completed
