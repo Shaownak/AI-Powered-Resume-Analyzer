@@ -178,8 +178,7 @@ jobs:
             },
             'root': {
                 'handlers': ['null'],
-            },
-        }
+            },        }
         EOF
 
     - name: Run migrations
@@ -188,6 +187,7 @@ jobs:
 
     - name: Run Django tests
       run: |
+        echo "Running Django tests..."
         python manage.py test --settings=core.settings_ci --verbosity=2
 
     - name: Test AI microservice (basic)

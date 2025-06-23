@@ -18,17 +18,13 @@ django-cors-headers==4.3.1
 django-crispy-forms==2.1
 crispy-bootstrap5==0.7
 
-# Environment and configuration
+# Configuration and environment
 python-decouple==3.8
 dj-database-url==2.1.0
 
-# Monitoring and logging
-sentry-sdk[django]==1.38.0
-django-extensions==3.2.3
-
-# Security
-django-ratelimit==4.1.0
-django-csp==3.7
+# Security and monitoring
+sentry-sdk==1.38.0
+django-redis==5.4.0
 
 # Async support
 channels==4.0.0
