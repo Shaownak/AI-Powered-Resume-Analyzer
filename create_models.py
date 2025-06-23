@@ -1,7 +1,7 @@
 import os
 
 try:
-    content = '''from django.db import models
+    content = """from django.db import models
 from django.contrib.auth.models import User
 import requests
 
@@ -51,11 +51,11 @@ class Resume(models.Model):
 
     def __str__(self):
         return self.applicant_name
-'''
+"""
 
-    with open('jobs/models.py', 'w', encoding='utf-8') as f:
+    with open("jobs/models.py", "w", encoding="utf-8") as f:
         f.write(content)
-    print('models.py created successfully')
+    print("models.py created successfully")
     print(f'File size: {os.path.getsize("jobs/models.py")} bytes')
 except Exception as e:
-    print(f'Error: {e}')
+    print(f"Error: {e}")

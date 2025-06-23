@@ -1,6 +1,6 @@
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 
 app = FastAPI(title="AI Resume Scorer - Simple Version")
 
@@ -13,18 +13,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def root():
     return {"message": "AI Resume Scorer is running"}
 
+
 @app.get("/health")
 async def health():
-    return {
-        "status": "healthy", 
-        "service": "ai-resume-scorer",
-        "redis_status": "disabled",
-        "cors": "enabled"
-    }
+    return {"status": "healthy", "service": "ai-resume-scorer", "redis_status": "disabled", "cors": "enabled"}
+
 
 if __name__ == "__main__":
     print("Starting simple AI Resume Scorer...")

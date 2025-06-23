@@ -1,6 +1,7 @@
-from django.db import models
-from django.contrib.auth.models import User
 import requests
+
+from django.contrib.auth.models import User
+from django.db import models
 
 
 class Job(models.Model):
@@ -8,28 +9,26 @@ class Job(models.Model):
     description = models.TextField()
     posted_by = models.ForeignKey(User, on_delete=models.CASCADE)
     posted_at = models.DateTimeField(auto_now_add=True)
-    
+
     def __str__(self):
         return self.title
 
 
 class Resume(models.Model):
-    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='resumes')
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="resumes")
     applicant_name = models.CharField(max_length=255)
-    resume_file = models.FileField(upload_to='resumes/')
+    resume_file = models.FileField(upload_to="resumes/")
     uploaded_at = models.DateTimeField(auto_now_add=True)
     score = models.FloatField(null=True, blank=True)
-    
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
         if self.resume_file and self.score is None:
             try:
-                with open(self.resume_file.path, 'rb') as f:
+                with open(self.resume_file.path, "rb") as f:
                     response = requests.post(
-                        'http://127.0.0.1:8001/score/',
-                        files={'file': f},
-                        data={'job_description': self.job.description}
+                        "http://127.0.0.1:8001/score/", files={"file": f}, data={"job_description": self.job.description}
                     )
                     if response.status_code == 200:
                         self.score = response.json().get("score")
@@ -40,6 +39,7 @@ class Resume(models.Model):
             except Exception as e:
                 try:
                     from .ai import calculate_resume_score
+
                     self.score = calculate_resume_score(self.resume_file.path, self.job.description)
                     Resume.objects.filter(pk=self.pk).update(score=self.score)
                     print(f"✅ Fallback scoring for {self.applicant_name}: {self.score}%")
