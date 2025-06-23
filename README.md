@@ -456,23 +456,11 @@ We welcome contributions! Please see our contributing guidelines:
 - Write tests for new features
 - Update documentation as needed
 
-## 📞 Support
-
-For support and questions:
-- **Issues**: [GitHub Issues](https://github.com/yourusername/resume-screener/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/resume-screener/discussions)
-- **Email**: support@resumescreener.com
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- Django community for the excellent web framework
-- FastAPI team for the high-performance API framework
-- scikit-learn contributors for machine learning capabilities
-- All contributors who have helped make this project better
 
 ---
 
