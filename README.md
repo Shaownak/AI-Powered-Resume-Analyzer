@@ -1,6 +1,6 @@
 # 🚀 AI-Powered Resume Screener Platform
 
-An enterprise-grade, full-stack application that uses AI to intelligently analyze and screen resumes. Built with Django, FastAPI microservices, PostgreSQL, Redis, and React frontend - fully containerized with comprehensive CI/CD pipeline.
+An enterprise-grade application that uses AI to analyze and screen resumes. Built with Django, FastAPI microservices, Postgresql and Redis. It offers intelligent resume parsing, candidate scoring, and keyword matching. Fully dockerized with Nginx reverse proxy, Gunicorn/Uvicorn servers, and GitHub Actions CI/CD for seamless deployment.
 
 ![Platform Status](https://img.shields.io/badge/Status-Production%20Ready-green)
 ![Django](https://img.shields.io/badge/Django-5.0.2-blue)
