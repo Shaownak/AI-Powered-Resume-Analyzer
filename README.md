@@ -93,7 +93,7 @@ An enterprise-grade application that uses AI to analyze and screen resumes. Buil
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/resume-screener.git
+git clone https://github.com/Shaownak/AI-Powered-Resume-Analyzer.git
 cd resume-screener
 ```
 
