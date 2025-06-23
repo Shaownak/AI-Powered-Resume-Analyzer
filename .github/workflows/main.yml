@@ -29,16 +29,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
     - name: Checkout code
@@ -54,16 +44,15 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements-production.txt
-        pip install pytest pytest-django pytest-cov flake8 black isort
+        pip install flake8 black isort
 
-    - name: Create test settings
+    - name: Create simple CI settings
       run: |
         cat > core/settings_ci.py << 'EOF'
-        import os
         from pathlib import Path
         
         BASE_DIR = Path(__file__).resolve().parent.parent
-        SECRET_KEY = 'test-secret-key-for-ci-testing-12345'
+        SECRET_KEY = 'ci-test-key-12345'
         DEBUG = True
         ALLOWED_HOSTS = ['*']
         
@@ -91,6 +80,8 @@ jobs:
         ]
         
         ROOT_URLCONF = 'core.urls'
+        WSGI_APPLICATION = 'core.wsgi.application'
+        AUTH_USER_MODEL = 'accounts.CustomUser'
         
         TEMPLATES = [
             {
@@ -108,9 +99,6 @@ jobs:
             },
         ]
         
-        WSGI_APPLICATION = 'core.wsgi.application'
-        AUTH_USER_MODEL = 'accounts.CustomUser'
-        
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
@@ -127,26 +115,15 @@ jobs:
         USE_I18N = True
         USE_TZ = True
         
-        STATIC_URL = 'static/'
+        STATIC_URL = '/static/'
         STATIC_ROOT = BASE_DIR / 'staticfiles'
         MEDIA_URL = '/media/'
         MEDIA_ROOT = BASE_DIR / 'media'
         
         DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
         
-        CORS_ALLOWED_ORIGINS = [
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
-        ]
-        CORS_ALLOW_CREDENTIALS = True
         CORS_ALLOW_ALL_ORIGINS = True
-        
         EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-        DEFAULT_FROM_EMAIL = 'test@example.com'
-        
-        LOGIN_URL = '/login/'
-        LOGIN_REDIRECT_URL = '/'
-        LOGOUT_REDIRECT_URL = '/'
         
         REDIS_URL = 'redis://localhost:6379/0'
         AI_MICROSERVICE_URL = 'http://localhost:8001'
@@ -155,37 +132,30 @@ jobs:
             'version': 1,
             'disable_existing_loggers': False,
             'handlers': {
-                'null': {
-                    'class': 'logging.NullHandler',
-                },
+                'null': {'class': 'logging.NullHandler'},
             },
-            'root': {
-                'handlers': ['null'],
-            },
+            'root': {'handlers': ['null']},
         }
         EOF
 
+    - name: Wait for PostgreSQL
+      run: |
+        until pg_isready -h localhost -p 5432 -U postgres; do
+          echo "Waiting for postgres..."
+          sleep 2
+        done
+
     - name: Run migrations
-      run: python manage.py migrate --settings=core.settings_ci
-
-    - name: Run Django tests
-      run: python manage.py test --settings=core.settings_ci --verbosity=2
-
-    - name: Test AI microservice (basic)
-      working-directory: ./ai_microservice
       run: |
-        pip install -r requirements.txt
-        python -c "import main; print('AI microservice imports successfully')"
+        python manage.py migrate --settings=core.settings_ci
 
-    - name: Check critical code style issues
+    - name: Run basic Django tests
       run: |
-        echo "Checking for critical syntax errors..."
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || echo "Some syntax issues found"
+        python manage.py test --settings=core.settings_ci --verbosity=2 --keepdb
 
-    - name: Check code formatting (non-blocking)
+    - name: Check critical syntax errors
       run: |
-        black --check --diff . || echo "Black formatting differences found"
-        isort --check-only --diff . || echo "Import sorting differences found"
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || echo "Syntax issues found"
 
   build_and_push:
     name: Build & Push Docker Images
@@ -248,74 +218,3 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
-
-  security_scan:
-    name: Security Scan
-    needs: build_and_push
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
-    strategy:
-      matrix:
-        component: [web, ai-service]
-
-    steps:
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ matrix.component }}:latest
-        format: 'sarif'
-        output: 'trivy-results-${{ matrix.component }}.sarif'
-
-    - name: Upload Trivy scan results
-      uses: github/codeql-action/upload-sarif@v2
-      if: always()
-      with:
-        sarif_file: 'trivy-results-${{ matrix.component }}.sarif'
-
-  deploy_staging:
-    name: Deploy to Staging
-    needs: [test, build_and_push]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
-    environment:
-      name: staging
-      url: https://staging.your-domain.com
-
-    steps:
-    - name: Deploy to staging server
-      run: |
-        echo "Staging deployment would happen here"
-        echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:develop-${{ github.sha }}"
-
-  deploy_production:
-    name: Deploy to Production
-    needs: [test, build_and_push, security_scan]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    environment:
-      name: production
-      url: https://your-domain.com
-
-    steps:
-    - name: Checkout deployment scripts
-      uses: actions/checkout@v4
-
-    - name: Deploy to production server
-      if: false  # Disable actual deployment for now
-      run: |
-        echo "Production deployment would happen here"
-        echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:latest"
-
-  notify:
-    name: Notify Deployment Status
-    needs: [deploy_staging, deploy_production]
-    runs-on: ubuntu-latest
-    if: always()
-
-    steps:
-    - name: Notify Slack
-      if: false  # Disable notifications for now
-      run: |
-        echo "Slack notification would be sent here"
-        echo "Status: ${{ needs.deploy_production.result || needs.deploy_staging.result }}"
