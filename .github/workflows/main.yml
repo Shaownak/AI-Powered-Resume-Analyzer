@@ -44,15 +44,15 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements-production.txt
-        pip install flake8 black isort
+        pip install pytest pytest-django pytest-cov flake8 black isort
 
-    - name: Create simple CI settings
+    - name: Create CI settings
       run: |
         cat > core/settings_ci.py << 'EOF'
         from pathlib import Path
         
         BASE_DIR = Path(__file__).resolve().parent.parent
-        SECRET_KEY = 'ci-test-key-12345'
+        SECRET_KEY = 'ci-test-key-for-github-actions-12345'
         DEBUG = True
         ALLOWED_HOSTS = ['*']
         
@@ -138,24 +138,30 @@ jobs:
         }
         EOF
 
-    - name: Wait for PostgreSQL
+    - name: Wait for database
       run: |
-        until pg_isready -h localhost -p 5432 -U postgres; do
-          echo "Waiting for postgres..."
+        echo "Waiting for PostgreSQL to be ready..."
+        for i in {1..30}; do
+          if pg_isready -h localhost -p 5432 -U postgres; then
+            echo "PostgreSQL is ready!"
+            break
+          fi
+          echo "Waiting for PostgreSQL... ($i/30)"
           sleep 2
         done
 
-    - name: Run migrations
+    - name: Run Django migrations
       run: |
-        python manage.py migrate --settings=core.settings_ci
+        python manage.py migrate --settings=core.settings_ci --verbosity=2
 
-    - name: Run basic Django tests
+    - name: Run Django tests
       run: |
         python manage.py test --settings=core.settings_ci --verbosity=2 --keepdb
 
-    - name: Check critical syntax errors
+    - name: Check syntax errors
       run: |
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || echo "Syntax issues found"
+        echo "Checking for critical syntax errors..."
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || echo "Found some syntax issues"
 
   build_and_push:
     name: Build & Push Docker Images

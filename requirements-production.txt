@@ -1,5 +1,5 @@
 # Django and core dependencies
-Django==4.2.7
+Django==5.0.2
 psycopg2-binary==2.9.9
 redis==5.0.1
 celery==5.3.4
